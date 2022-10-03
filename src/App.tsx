@@ -1,27 +1,47 @@
-import logo from "./logo.svg";
 import "./App.css";
 import { PolywrapProvider } from "@polywrap/react";
+import { getClientConfig } from "./lib/polywrap/config";
+import Safe from "./components/Safe";
+import { useMetaMask } from "metamask-react";
+import { Spinner, Container } from "@chakra-ui/react";
+import "react-notifications/lib/notifications.css";
+import Header from "./components/Header";
 
 function App() {
-  return (
-    <PolywrapProvider>
-      <div className="App">
-        <header className="App-header">
-          <img src={logo} className="App-logo" alt="logo" />
-          <p>
-            Edit <code>src/App.js</code> and save to reload.
-          </p>
-          <a
-            className="App-link"
-            href="https://reactjs.org"
-            target="_blank"
-            rel="noopener noreferrer"
+  const { connect, account, chainId, ethereum, status } = useMetaMask();
+
+  const handleConnect = () => {
+    connect();
+  };
+
+  console.log(status);
+  const getContent = () => {
+    switch (status) {
+      case "initializing":
+        return <Spinner />;
+      case "connected": {
+        return (
+          <PolywrapProvider
+            {...getClientConfig(chainId || "", ethereum, account || "")}
           >
-            Learn React
-          </a>
-        </header>
-      </div>
-    </PolywrapProvider>
+            <Safe />
+          </PolywrapProvider>
+        );
+      }
+      default: {
+        return (
+          <div>
+            <button onClick={handleConnect}>Connect</button>
+          </div>
+        );
+      }
+    }
+  };
+  return (
+    <div className="app">
+      <Header />
+      <Container>{getContent()}</Container>
+    </div>
   );
 }
 
