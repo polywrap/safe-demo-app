@@ -8,13 +8,8 @@ import "react-notifications/lib/notifications.css";
 import Header from "./components/Header";
 
 function App() {
-  const { connect, account, chainId, ethereum, status } = useMetaMask();
+  const { account, chainId, ethereum, status } = useMetaMask();
 
-  const handleConnect = () => {
-    connect();
-  };
-
-  console.log(status);
   const getContent = () => {
     switch (status) {
       case "initializing":
@@ -26,13 +21,6 @@ function App() {
           >
             <Safe />
           </PolywrapProvider>
-        );
-      }
-      default: {
-        return (
-          <div>
-            <button onClick={handleConnect}>Connect</button>
-          </div>
         );
       }
     }

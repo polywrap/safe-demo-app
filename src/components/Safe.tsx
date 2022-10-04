@@ -16,6 +16,7 @@ import {
   Box,
   Button,
   Heading,
+  Spinner,
 } from "@chakra-ui/react";
 import { AddIcon, CloseIcon } from "@chakra-ui/icons";
 
@@ -30,7 +31,7 @@ import {
 
 export default function Safe() {
   const { account } = useConnectedMetaMask();
-  const { execute, loading, data, error } = usePolywrapInvoke<
+  const { execute, loading } = usePolywrapInvoke<
     Record<string, unknown> & { safeAddress: string }
   >({
     uri: SAFE_FACTORY_URI,
@@ -85,7 +86,9 @@ export default function Safe() {
                     <NumberInput
                       min={0}
                       {...field}
-                      onChange={(val) => form.setFieldValue(field.name, val)}
+                      onChange={(val) =>
+                        form.setFieldValue(field.name, Number(val))
+                      }
                     >
                       <NumberInputField />
                       <NumberInputStepper>
@@ -149,7 +152,7 @@ export default function Safe() {
             </FieldArray>
 
             <Button disabled={loading} type="submit">
-              Deploy Safe
+              {loading ? <Spinner /> : "Deploy Safe"}
             </Button>
           </Form>
         )}
