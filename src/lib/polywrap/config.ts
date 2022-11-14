@@ -4,6 +4,7 @@ import {
   Connection,
   Connections,
 } from "@polywrap/ethereum-plugin-js";
+import { SAFE_CONTRACTS_URI } from "./uris";
 
 export const getClientConfig = (
   chainId: string,
@@ -25,5 +26,8 @@ export const getClientConfig = (
         }),
       }),
     },
+  ],
+  redirects: [
+    { from: "wrap://ens/safe.contracts.polywrap.eth", to: SAFE_CONTRACTS_URI },
   ],
 });

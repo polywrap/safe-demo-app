@@ -1,11 +1,12 @@
 import "./App.css";
 import { PolywrapProvider } from "@polywrap/react";
 import { getClientConfig } from "./lib/polywrap/config";
-import Safe from "./components/Safe";
+import DeployForm from "./components/DeployForm";
 import { useMetaMask } from "metamask-react";
 import { Spinner, Container } from "@chakra-ui/react";
 import "react-notifications/lib/notifications.css";
 import Header from "./components/Header";
+import Manager from "./components/Manager";
 
 function App() {
   const { account, chainId, ethereum, status } = useMetaMask();
@@ -17,9 +18,14 @@ function App() {
       case "connected": {
         return (
           <PolywrapProvider
-            {...getClientConfig(chainId || "", ethereum, account || "")}
+            {...getClientConfig(
+              ethereum.networkVersion || "",
+              ethereum,
+              account || ""
+            )}
           >
-            <Safe />
+            <Manager />
+            <DeployForm />
           </PolywrapProvider>
         );
       }
@@ -28,7 +34,7 @@ function App() {
   return (
     <div className="app">
       <Header />
-      <Container>{getContent()}</Container>
+      <Container sx={{ maxW: "fit-content" }}>{getContent()}</Container>
     </div>
   );
 }

@@ -22,7 +22,7 @@ export default function Header() {
   return (
     <header>
       <Flex justifyContent={"flex-end"} p={4}>
-        <Button onClick={handleConnect}>
+        <Button onClick={handleConnect} size="sm">
           {status === "connected" ? chainId + ": " + account : "Connect"}
         </Button>
       </Flex>
