@@ -15,59 +15,55 @@ import {
 } from "@chakra-ui/react";
 import { useConnectedMetaMask } from "metamask-react";
 import React, { useEffect } from "react";
+import { useMatches } from "react-router";
 import { useInvokeManager } from "../hooks";
+import { withLoading } from "../utils/loader";
 import { AddressList } from "./AddressPanel";
 import Panel, { PanelHead, PanelBody } from "./Panel";
 
-const withLoading = (
-  isLoading: boolean | undefined,
-  component: React.ReactNode
-) => (isLoading ? <Spinner /> : component ? component : undefined);
+export default function OwnerManager() {
+  const [match] = useMatches();
+  const safeAddress = match.params.safe!;
 
-export default function OwnerManager({
-  safeAddress,
-}: {
-  safeAddress?: string;
-}) {
-  //GET
   const [
     getOwners,
     { data: owners, loading: ownersLoading, error: ownersError },
-  ] = useInvokeManager<string[]>("getOwners");
+  ] = useInvokeManager<string[]>("getOwners", safeAddress);
   const { account } = useConnectedMetaMask();
 
   const [
     getThreshold,
     { data: threshold, loading: thresholdLoading, error: isOwnerError },
-  ] = useInvokeManager<number>("getThreshold");
+  ] = useInvokeManager<number>("getThreshold", safeAddress);
 
   const [isOwner, { data: isOwnerData, loading: isOwnerLoading }] =
-    useInvokeManager<number>("isOwner"); //  ownerAddress: String!
+    useInvokeManager<number>("isOwner", safeAddress); //  ownerAddress: String!
 
-  //SET
+  /*   //SET
   const [encodeAddOwnerWithThresholdData, { data: addOwnerResult }] =
-    useInvokeManager<string>("encodeAddOwnerWithThresholdData"); // {  ownerAddress: String!  threshold: UInt32}
+    useInvokeManager<string>("encodeAddOwnerWithThresholdData", safeAddress); // {  ownerAddress: String!  threshold: UInt32}
 
   const [encodeRemoveOwnerData, { data: removeOwnerResult }] =
-    useInvokeManager<string>("encodeRemoveOwnerData"); // {  ownerAddress: String!  threshold: UInt32}
+    useInvokeManager<string>("encodeRemoveOwnerData", safeAddress); // {  ownerAddress: String!  threshold: UInt32}
 
   const [encodeSwapOwnerData, { data: swapOwnerResult }] =
     useInvokeManager<string>("encodeSwapOwnerData"); // {  oldOwnerAddress: String!  newOwnerAddress: String!}
-
+ 
   const [
     encodeChangeThresholdData,
     { data: changeTresholdResult, loading: changeThresholdLoading },
   ] = useInvokeManager<string>("encodeChangeThresholdData"); // {  threshold: UInt32!}
+*/
 
   const handleChangeThreshold = () => {
-    encodeChangeThresholdData({ threshold: 2 }).then(console.log);
+    // encodeChangeThresholdData({ threshold: 2 }).then(console.log);
   };
 
   const handleAddOwner = () => {
-    encodeAddOwnerWithThresholdData({
+    /*  encodeAddOwnerWithThresholdData({
       ownerAddress: "0x4300bc1Ed00706E5386C6B938382d37eDB31d143",
       threshold: 2,
-    }).then(console.log);
+    }).then(console.log); */
   };
 
   useEffect(() => {
@@ -75,7 +71,9 @@ export default function OwnerManager({
     getThreshold({});
     isOwner({ ownerAddress: account });
   }, [safeAddress]);
+
   // 0x4300bc1Ed00706E5386C6B938382d37eDB31d143
+
   console.log("owners", ownersError);
   return (
     <div>
@@ -119,7 +117,7 @@ export default function OwnerManager({
             </NumberInputStepper>
           </NumberInput>
           <Button
-            isLoading={changeThresholdLoading}
+            //isLoading={changeThresholdLoading}
             onClick={handleChangeThreshold}
           >
             Change Threshold

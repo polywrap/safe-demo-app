@@ -1,15 +1,15 @@
 import "./App.css";
 import { PolywrapProvider } from "@polywrap/react";
 import { getClientConfig } from "./lib/polywrap/config";
-import DeployForm from "./components/DeployForm";
 import { useMetaMask } from "metamask-react";
-import { Spinner, Container } from "@chakra-ui/react";
+import { Spinner, Box } from "@chakra-ui/react";
 import "react-notifications/lib/notifications.css";
 import Header from "./components/Header";
-import Manager from "./components/Manager";
+import { RouterProvider } from "react-router";
+import router from "./modules/router";
 
 function App() {
-  const { account, chainId, ethereum, status } = useMetaMask();
+  const { account, ethereum, status } = useMetaMask();
 
   const getContent = () => {
     switch (status) {
@@ -24,8 +24,7 @@ function App() {
               account || ""
             )}
           >
-            <Manager />
-            <DeployForm />
+            <RouterProvider router={router} />
           </PolywrapProvider>
         );
       }
@@ -34,7 +33,7 @@ function App() {
   return (
     <div className="app">
       <Header />
-      <Container sx={{ maxW: "fit-content" }}>{getContent()}</Container>
+      <Box>{getContent()}</Box>
     </div>
   );
 }

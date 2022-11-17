@@ -1,5 +1,4 @@
 import { usePolywrapInvoke } from "@polywrap/react";
-import React, { useState } from "react";
 import { SAFE_FACTORY_URI } from "../lib/polywrap/uris";
 import {
   Input,
@@ -13,14 +12,12 @@ import {
   NumberDecrementStepper,
   NumberInput,
   Stack,
-  Box,
   Button,
   Heading,
   Spinner,
-  InputProps,
   Image,
 } from "@chakra-ui/react";
-import { AddIcon, CloseIcon } from "@chakra-ui/icons";
+import { AddIcon } from "@chakra-ui/icons";
 
 import { Formik, Form, FieldArray, Field } from "formik";
 import { useConnectedMetaMask } from "metamask-react";
@@ -30,20 +27,20 @@ import {
   NotificationManager,
   //@ts-ignore
 } from "react-notifications";
-import Panel, { PanelHead } from "./Panel";
+import { PanelHead } from "./Panel";
+import { useNavigate } from "react-router";
+import { addSafe } from "../utils/localstorage";
 
-const MyInput = (props: InputProps) => {
-  return <InputGroup></InputGroup>;
-};
 export default function DeployForm() {
   const { account } = useConnectedMetaMask();
+
   const { execute, loading } = usePolywrapInvoke<
     Record<string, unknown> & { safeAddress: string }
   >({
     uri: SAFE_FACTORY_URI,
     method: "deploySafe",
   });
-  const [resultAddress, setResultAddress] = useState<string[]>([]);
+  const navigate = useNavigate();
 
   const handleOnSubmit = (v: typeof initialValues) => {
     execute({
@@ -55,7 +52,7 @@ export default function DeployForm() {
         saltNonce: Date.now().toString(),
       },
     }).then((res) => {
-      if (res.error) {
+      if (!res.ok) {
         NotificationManager.error(
           "Check console for additional details",
           "Error"
@@ -63,16 +60,17 @@ export default function DeployForm() {
         console.log("error", res.error);
         return;
       }
-      if (res.data) {
-        const safeAddress = res.data?.safeAddress;
+      if (res.ok) {
+        const safeAddress = res.value?.safeAddress;
 
         NotificationManager.success(
           `Your safe is deployed at: ${safeAddress}`,
           "Congratulations !"
         );
-        setResultAddress((state) => [...state, safeAddress]);
-        console.log("success", res.data);
-        return;
+
+        console.log("success", res.value);
+        addSafe(safeAddress);
+        navigate("/0x3cbf4e1ce15f606ab9441358f1fa42bd96f27a3a/home");
       }
     });
   };
@@ -102,6 +100,7 @@ export default function DeployForm() {
                     Threshold
                     <NumberInput
                       min={0}
+                      max={values.owners.length}
                       {...field}
                       onChange={(val) =>
                         form.setFieldValue(field.name, Number(val))
@@ -149,12 +148,7 @@ export default function DeployForm() {
                       ))}
                     <FormControl>
                       <FormLabel>
-                        <Button
-                          type="button"
-                          mr={4}
-                          onClick={() => push("")}
-                          disabled={values.threshold <= values.owners.length}
-                        >
+                        <Button type="button" mr={4} onClick={() => push("")}>
                           <AddIcon />
                         </Button>
                         Add owner
@@ -171,17 +165,6 @@ export default function DeployForm() {
           </Form>
         )}
       </Formik>
-      {Boolean(resultAddress.length) && (
-        <Box mt={10}>
-          <Heading size={"md"}>Deployed safes:</Heading>
-          <Stack>
-            {resultAddress.map((addr) => (
-              <Box>{addr}</Box>
-            ))}
-          </Stack>
-        </Box>
-      )}
-
       <NotificationContainer />
     </PanelHead>
   );

@@ -1,5 +1,6 @@
 import { Button, List, ListItem } from "@chakra-ui/react";
 import React from "react";
+import { useMatches } from "react-router";
 import { useInvokeManager } from "../hooks";
 
 type Props = {};
@@ -7,16 +8,23 @@ type Props = {};
 export default function ModuleManager({}: Props) {
   //ModuleManager
 
-  const [getModules, { data: modules }] =
-    useInvokeManager<string[]>("getModules");
+  const [match] = useMatches();
+  const safeAddress = match.params.safe!;
+
+  const [getModules, { data: modules }] = useInvokeManager<string[]>(
+    "getModules",
+    safeAddress
+  );
 
   const [isModuleEnabled, { data: isModuleEnabledResult }] =
-    useInvokeManager<boolean>("isModuleEnabled"); // {  moduleAddress: String!}
+    useInvokeManager<boolean>("isModuleEnabled", safeAddress); // {  moduleAddress: String!}
   const [encodeEnableModuleData] = useInvokeManager<string>(
-    "encodeEnableModuleData"
+    "encodeEnableModuleData",
+    safeAddress
   ); // {  moduleAddress: String!}
   const [encodeDisableModuleData] = useInvokeManager<string>(
-    "encodeDisableModuleData"
+    "encodeDisableModuleData",
+    safeAddress
   ); // {  moduleAddress: String!}
 
   const handleGetModules = async () => {

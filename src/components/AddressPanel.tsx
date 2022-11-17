@@ -32,8 +32,8 @@ export default function AddressPanel({ value, onRemove }: Props) {
 export const AddressList = ({ addressess }: { addressess: string[] }) => {
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
-      {addressess.map((a) => (
-        <AddressPanel value={a} onRemove={""} />
+      {addressess.map((a, index) => (
+        <AddressPanel key={index} value={a} onRemove={""} />
       ))}
     </Box>
   );
