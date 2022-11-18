@@ -3,7 +3,7 @@ import {
   ethereumPlugin,
   Connection,
   Connections,
-} from "@polywrap/ethereum-plugin-js";
+} from "../../vendor/ethereum-plugin-js";
 import { SAFE_CONTRACTS_URI } from "./uris";
 
 export const getClientConfig = (

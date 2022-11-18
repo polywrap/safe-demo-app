@@ -3,9 +3,7 @@ import React from "react";
 import { useMatches } from "react-router";
 import { useInvokeManager } from "../hooks";
 
-type Props = {};
-
-export default function ModuleManager({}: Props) {
+export default function ModuleManager() {
   //ModuleManager
 
   const [match] = useMatches();
@@ -15,7 +13,7 @@ export default function ModuleManager({}: Props) {
     "getModules",
     safeAddress
   );
-
+  /* 
   const [isModuleEnabled, { data: isModuleEnabledResult }] =
     useInvokeManager<boolean>("isModuleEnabled", safeAddress); // {  moduleAddress: String!}
   const [encodeEnableModuleData] = useInvokeManager<string>(
@@ -25,7 +23,7 @@ export default function ModuleManager({}: Props) {
   const [encodeDisableModuleData] = useInvokeManager<string>(
     "encodeDisableModuleData",
     safeAddress
-  ); // {  moduleAddress: String!}
+  ); // {  moduleAddress: String!} */
 
   const handleGetModules = async () => {
     getModules({}).then(console.log);

@@ -5,7 +5,6 @@ import {
   AccordionItem,
   AccordionPanel,
   Badge,
-  Button,
   Heading,
   List,
   ListItem,
@@ -13,7 +12,7 @@ import {
   SystemStyleObject,
   Tooltip,
 } from "@chakra-ui/react";
-import { PropsWithChildren, useMemo } from "react";
+import { PropsWithChildren } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import useStorage from "../../hooks/useStorage";
 import {
@@ -24,14 +23,14 @@ import {
   SAFE_TRANSACTIONS,
 } from "../../modules/router/routes";
 import { Transaction } from "../../types";
-import { getPendingTransactions } from "../../utils/localstorage";
 import { shortenAddress } from "../../utils/string";
 import styles, { navListStyles } from "./styles";
 
 export default function Sidebar() {
   const safes: string[] = useStorage("savedSafes");
   const params = useParams();
-  const accordionOpenedIndex = safes.findIndex((safe) => safe === params?.safe);
+  const accordionOpenedIndex =
+    safes?.length && safes.findIndex((safe) => safe === params?.safe);
 
   return (
     <Stack id="sidebar" as="nav" sx={styles}>
@@ -41,9 +40,11 @@ export default function Sidebar() {
         defaultIndex={[accordionOpenedIndex]}
         allowMultiple={true}
       >
-        {safes.map((safe, index) => (
-          <SafeNavItem key={safe + index} address={safe} />
-        ))}
+        {safes?.length
+          ? safes?.map((safe, index) => (
+              <SafeNavItem key={safe + index} address={safe} />
+            ))
+          : null}
       </Accordion>
       <Heading as="h3">Settings</Heading>
       <List sx={navListStyles}>
@@ -59,7 +60,7 @@ export const SafeNavItem = ({ address }: { address: string }) => {
   return (
     <AccordionItem key={address}>
       <AccordionButton sx={{ justifyContent: "space-between" }}>
-        {shortenAddress(address)}
+        {shortenAddress(address, 8)}
         <AccordionIcon />
       </AccordionButton>
       <AccordionPanel pb={4}>

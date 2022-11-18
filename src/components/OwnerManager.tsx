@@ -1,80 +1,141 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import {
   Button,
   Flex,
   Heading,
   Input,
-  List,
-  ListItem,
   NumberDecrementStepper,
   NumberIncrementStepper,
   NumberInput,
   NumberInputField,
   NumberInputStepper,
-  Spinner,
   Stack,
 } from "@chakra-ui/react";
 import { useConnectedMetaMask } from "metamask-react";
-import React, { useEffect } from "react";
-import { useMatches } from "react-router";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router";
 import { useInvokeManager } from "../hooks";
+import { SAFE_TRANSACTIONS } from "../modules/router/routes";
+import { Transaction } from "../types";
 import { withLoading } from "../utils/loader";
+import { addPendingTransaction } from "../utils/localstorage";
 import { AddressList } from "./AddressPanel";
 import Panel, { PanelHead, PanelBody } from "./Panel";
 
 export default function OwnerManager() {
-  const [match] = useMatches();
-  const safeAddress = match.params.safe!;
+  const { safe: safeAddress } = useParams();
+  const [toggle, setToggle] = useState(false);
+  const navigate = useNavigate();
 
-  const [
-    getOwners,
-    { data: owners, loading: ownersLoading, error: ownersError },
-  ] = useInvokeManager<string[]>("getOwners", safeAddress);
+  const rerender = () => setToggle((state) => !state);
+
+  const [getOwners, { data: owners, loading: ownersLoading }] =
+    useInvokeManager<string[]>("getOwners", safeAddress);
   const { account } = useConnectedMetaMask();
 
-  const [
-    getThreshold,
-    { data: threshold, loading: thresholdLoading, error: isOwnerError },
-  ] = useInvokeManager<number>("getThreshold", safeAddress);
+  const [getThreshold, { data: threshold, loading: thresholdLoading }] =
+    useInvokeManager<number>("getThreshold", safeAddress);
 
   const [isOwner, { data: isOwnerData, loading: isOwnerLoading }] =
-    useInvokeManager<number>("isOwner", safeAddress); //  ownerAddress: String!
+    useInvokeManager<number>("isOwner", safeAddress);
 
-  /*   //SET
-  const [encodeAddOwnerWithThresholdData, { data: addOwnerResult }] =
+  const [createTransaction] =
+    useInvokeManager<Transaction>("createTransaction");
+
+  const [executeTx, { loading: executing }] =
+    useInvokeManager<Transaction>("executeTransaction");
+
+  //SET
+  const [encodeAddOwnerWithThresholdData, { loading: encodingAddOwner }] =
     useInvokeManager<string>("encodeAddOwnerWithThresholdData", safeAddress); // {  ownerAddress: String!  threshold: UInt32}
 
-  const [encodeRemoveOwnerData, { data: removeOwnerResult }] =
-    useInvokeManager<string>("encodeRemoveOwnerData", safeAddress); // {  ownerAddress: String!  threshold: UInt32}
+  const [encodeRemoveOwnerData] = useInvokeManager<string>(
+    "encodeRemoveOwnerData",
+    safeAddress
+  );
 
-  const [encodeSwapOwnerData, { data: swapOwnerResult }] =
+  /*   const [encodeSwapOwnerData, { data: swapOwnerResult }] =
     useInvokeManager<string>("encodeSwapOwnerData"); // {  oldOwnerAddress: String!  newOwnerAddress: String!}
- 
-  const [
-    encodeChangeThresholdData,
-    { data: changeTresholdResult, loading: changeThresholdLoading },
-  ] = useInvokeManager<string>("encodeChangeThresholdData"); // {  threshold: UInt32!}
-*/
+ */
 
-  const handleChangeThreshold = () => {
-    // encodeChangeThresholdData({ threshold: 2 }).then(console.log);
+  const [encodeChangeThresholdData, { loading: encodingChangeThreshold }] =
+    useInvokeManager<string>("encodeChangeThresholdData"); // {  threshold: UInt32!}
+
+  const handleChangeThreshold = async () => {
+    const encoded = await encodeChangeThresholdData({ threshold: 1 });
+    if (!encoded.ok) return;
+    const tx = await createTransaction({
+      tx: {
+        to: safeAddress,
+        value: "0",
+        data: encoded.value,
+      },
+    });
+    if (!tx.ok) return;
+    if (threshold && threshold > 1) {
+      addPendingTransaction(safeAddress!, tx.value);
+      navigate(`/${safeAddress}/${SAFE_TRANSACTIONS}`);
+    } else {
+      const changeResult = await executeTx({ tx: tx.value });
+      if (!changeResult.ok) return;
+      rerender();
+    }
+  };
+  const [newOwner, setNewOwner] = useState("");
+
+  const handleAddOwner = async () => {
+    const encoded = await encodeAddOwnerWithThresholdData({
+      ownerAddress: newOwner, // "0x9f9a1dEc7Bc1Ab6E4104B186fa0C5E4dD8d0D30e", //
+    });
+    if (!encoded.ok) return;
+    const tx = await createTransaction({
+      tx: {
+        to: safeAddress,
+        value: "0",
+        data: encoded.value,
+      },
+    });
+    if (!tx.ok) return;
+    if (threshold && threshold > 1) {
+      addPendingTransaction(safeAddress!, tx.value);
+      navigate(`/${safeAddress}/${SAFE_TRANSACTIONS}`);
+    } else {
+      const addResult = await executeTx({ tx: tx.value });
+      if (!addResult.ok) return;
+      rerender();
+    }
   };
 
-  const handleAddOwner = () => {
-    /*  encodeAddOwnerWithThresholdData({
-      ownerAddress: "0x4300bc1Ed00706E5386C6B938382d37eDB31d143",
-      threshold: 2,
-    }).then(console.log); */
+  const handleRemoveOwner = async (ownerAddress: string) => {
+    const encoded = await encodeRemoveOwnerData({
+      // {  ownerAddress: String!  threshold: UInt32}
+      ownerAddress: ownerAddress,
+    });
+    if (!encoded.ok) return;
+    const tx = await createTransaction({
+      tx: {
+        to: safeAddress,
+        value: "0",
+        data: encoded.value,
+      },
+    });
+    if (!tx.ok) return;
+    if (threshold && threshold > 1) {
+      addPendingTransaction(safeAddress!, tx.value);
+      navigate(`/${safeAddress}/${SAFE_TRANSACTIONS}`);
+    } else {
+      const removeResult = await executeTx({ tx: tx.value });
+      if (!removeResult.ok) return;
+      rerender();
+    }
   };
 
   useEffect(() => {
     getOwners({});
     getThreshold({});
     isOwner({ ownerAddress: account });
-  }, [safeAddress]);
+  }, [safeAddress, toggle]);
 
-  // 0x4300bc1Ed00706E5386C6B938382d37eDB31d143
-
-  console.log("owners", ownersError);
   return (
     <div>
       <Panel sx={{ mb: "40px" }}>
@@ -94,15 +155,15 @@ export default function OwnerManager() {
               Threshold: {withLoading(thresholdLoading, threshold)}
             </Heading>
           </Stack>
-          <Stack>
-            <Heading size={"md"}>Owners</Heading>
-          </Stack>
         </PanelHead>
         <PanelBody>
           Owners:
           {withLoading(
             ownersLoading,
-            <AddressList addressess={owners || new Array(6).fill(account)} />
+            <AddressList
+              addressess={owners || new Array(6).fill(account)}
+              onRemove={handleRemoveOwner}
+            />
           )}
         </PanelBody>
       </Panel>
@@ -119,13 +180,22 @@ export default function OwnerManager() {
           <Button
             //isLoading={changeThresholdLoading}
             onClick={handleChangeThreshold}
+            disabled={encodingChangeThreshold || executing}
           >
             Change Threshold
           </Button>
         </Flex>
         <Flex>
-          <Input />
-          <Button onClick={handleAddOwner}>Add Owner</Button>
+          <Input
+            value={newOwner}
+            onChange={(e) => setNewOwner(e.target.value)}
+          />
+          <Button
+            onClick={handleAddOwner}
+            disabled={encodingAddOwner || executing}
+          >
+            Add Owner
+          </Button>
         </Flex>
       </Stack>
     </div>

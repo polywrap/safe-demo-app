@@ -1,29 +1,23 @@
 import { useEffect } from "react";
 import { useMatches } from "react-router";
-import { Heading, Stack } from "@chakra-ui/react";
+import { Flex, Heading, Stack, Text } from "@chakra-ui/react";
 import { useConnectedMetaMask } from "metamask-react";
 import { useInvokeManager } from "../hooks";
 import { withLoading } from "../utils/loader";
 import { AddressList } from "./AddressPanel";
 import Panel, { PanelHead, PanelBody } from "./Panel";
-import { usePolywrapInvoke } from "@polywrap/react";
-import { SAFE_CONTRACTS_URI } from "../lib/polywrap/uris";
 
 export default function Safe() {
   const [match] = useMatches();
   const safeAddress = match.params.safe!;
 
-  const [
-    getOwners,
-    { data: owners, loading: ownersLoading, error: ownersError },
-  ] = useInvokeManager<string[]>("getOwners", safeAddress);
+  const [getOwners, { data: owners, loading: ownersLoading }] =
+    useInvokeManager<string[]>("getOwners", safeAddress);
 
   const { account } = useConnectedMetaMask();
 
-  const [
-    getThreshold,
-    { data: threshold, loading: thresholdLoading, error: isOwnerError },
-  ] = useInvokeManager<number>("getThreshold", safeAddress);
+  const [getThreshold, { data: threshold, loading: thresholdLoading }] =
+    useInvokeManager<number>("getThreshold", safeAddress);
 
   const [isOwner, { data: isOwnerData, loading: isOwnerLoading }] =
     useInvokeManager<number>("isOwner", safeAddress); //  ownerAddress: String!
@@ -32,12 +26,18 @@ export default function Safe() {
     getOwners({ address: safeAddress });
     getThreshold({});
     isOwner({ ownerAddress: account });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [safeAddress]);
 
   return (
     <Panel sx={{ mb: "40px" }}>
-      <PanelHead sx={{ p: "60px 122px 40px" }}>
-        <Heading>Owners:</Heading>
+      <PanelHead sx={{ p: "60px" }}>
+        <Flex alignItems={"center"} gap="4px">
+          <Text fontSize={"18px"} fontWeight="bold">
+            Safe Address:
+          </Text>
+          <Text fontSize={"18px"}>{safeAddress}</Text>
+        </Flex>
         <Stack>
           <Heading size={"md"}>
             Account is owner:{" "}
@@ -49,7 +49,11 @@ export default function Safe() {
         </Stack>
         <Stack>
           <Heading size={"md"}>
-            Threshold: {withLoading(thresholdLoading, threshold)}
+            Required confirmations:{" "}
+            {withLoading(
+              thresholdLoading || ownersLoading,
+              `${threshold} out of ${owners?.length} owners`
+            )}
           </Heading>
         </Stack>
       </PanelHead>

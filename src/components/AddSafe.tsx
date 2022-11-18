@@ -9,9 +9,7 @@ export default function AddSafe() {
   const [safeAddress, setSafeAddress] = useState<string>("");
   const navigate = useNavigate();
 
-  const [getOwners] = useInvokeManager("getOwners", safeAddress, {
-    ignoreErrors: true,
-  });
+  const [getOwners] = useInvokeManager("getOwners", safeAddress);
 
   const validateSafeAddress = async () => {
     const safeOwners = await getOwners({});
@@ -33,6 +31,7 @@ export default function AddSafe() {
         placeholder={"Safe Address"}
         value={safeAddress}
         onChange={(e) => setSafeAddress(e.target.value)}
+        mb="12px"
       />
       <Button onClick={handleAddSafe}>Add Safe</Button>
     </Box>

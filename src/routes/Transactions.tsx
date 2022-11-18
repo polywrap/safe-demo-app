@@ -1,22 +1,21 @@
-import React, { useEffect, useMemo } from "react";
-import { Box, Heading } from "@chakra-ui/react";
-import { useMatches } from "react-router";
+import { useEffect } from "react";
+import { Box, Button, Heading, Text } from "@chakra-ui/react";
+import { useNavigate, useParams } from "react-router";
 import TransactionsTable from "../components/TransactionsTable/TransactionsTable";
 import { useInvokeManager } from "../hooks";
-import { Transaction } from "../types";
-import { getPendingTransactions } from "../utils/localstorage";
+import { SAFE_CREATE_TRANSACTION } from "../modules/router/routes";
+import useStorage from "../hooks/useStorage";
+import { reviver } from "../utils/string";
 
 export default function Transactions() {
-  const [match] = useMatches();
-  const safeAddressParam = match.params.safe!;
+  const params = useParams();
+  const safeAddress = params.safe!;
+  const navigate = useNavigate();
 
   const [getThreshold, { data: threshold }] =
     useInvokeManager<number>("getThreshold");
 
-  const pendingTransactions = useMemo<(Transaction & { id: string })[]>(
-    () => getPendingTransactions(safeAddressParam),
-    [safeAddressParam]
-  );
+  const pendingTransactions = useStorage(`pendingTx:${safeAddress}`, reviver);
 
   useEffect(() => {
     getThreshold({});
@@ -24,11 +23,27 @@ export default function Transactions() {
 
   return (
     <Box>
-      <Heading mb="20px">Pending Transactions</Heading>
-      <TransactionsTable
-        transactions={pendingTransactions}
-        threshold={threshold}
-      />
+      {pendingTransactions.length ? (
+        <>
+          <Heading mb="20px">Pending Transactions</Heading>
+          <TransactionsTable
+            transactions={pendingTransactions}
+            threshold={threshold}
+          />
+        </>
+      ) : (
+        <>
+          <Heading mb="20px">No pending transactions</Heading>
+          <Text mb={"20px"}>You don't have pending transactions</Text>
+          <Button
+            onClick={() =>
+              navigate(`/${safeAddress}/${SAFE_CREATE_TRANSACTION}`)
+            }
+          >
+            New Transaction
+          </Button>
+        </>
+      )}
     </Box>
   );
 }

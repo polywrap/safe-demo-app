@@ -4,7 +4,7 @@ import closeImg from "../images/close.svg";
 
 type Props = {
   value: string;
-  onRemove: any;
+  onRemove?: any;
 };
 
 export default function AddressPanel({ value, onRemove }: Props) {
@@ -24,16 +24,26 @@ export default function AddressPanel({ value, onRemove }: Props) {
       }}
     >
       <Text as={"span"}>{value}</Text>
-      <Image src={closeImg} sx={{ cursor: "pointer" }} />
+      <Image
+        src={closeImg}
+        sx={{ cursor: "pointer" }}
+        onClick={() => onRemove(value)}
+      />
     </Box>
   );
 }
 
-export const AddressList = ({ addressess }: { addressess: string[] }) => {
+export const AddressList = ({
+  addressess,
+  onRemove,
+}: {
+  addressess: string[];
+  onRemove?: (address: string) => any;
+}) => {
   return (
     <Box sx={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
       {addressess.map((a, index) => (
-        <AddressPanel key={index} value={a} onRemove={""} />
+        <AddressPanel key={index} value={a} onRemove={onRemove} />
       ))}
     </Box>
   );

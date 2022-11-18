@@ -27,7 +27,7 @@ export const navListStyles: SystemStyleObject = {
 export const styles: SystemStyleObject = {
   p: "12px",
   border: "1px solid silver",
-  w: "300px",
+  w: "250px",
   h3: { fontSize: "24px" },
   ".accordion": {
     ".chakra-accordion__item": {

@@ -1,4 +1,7 @@
 import { Transaction, WithId } from "../types";
+import { replacer, reviver } from "./string";
+
+type JSON = string;
 
 export const addSafe = async (safeAddress: string) => {
   const localStorageItem = localStorage.getItem("savedSafes");
@@ -25,32 +28,34 @@ export const addPendingTransaction = (safeAddress: string, tx: Transaction) => {
 
   txs.push({ id: Date.now().toString(), ...tx });
 
-  localStorage.setItem(`pendingTx:${safeAddress}`, JSON.stringify(txs));
+  localStorage.setItem(
+    `pendingTx:${safeAddress}`,
+    JSON.stringify(txs, replacer)
+  );
   window.dispatchEvent(new Event("storage"));
 };
 
-export const getPendingTransactions = (
-  safeAddress: string
-): WithId<Transaction>[] => {
+export function updateTransaction(
+  safeAddress: string,
+  id: string,
+  updatedTx: WithId<Transaction>
+) {
   const localStorageItem = localStorage.getItem(`pendingTx:${safeAddress}`);
 
-  return localStorageItem ? parseJsonTransaction(localStorageItem) : [];
-};
+  let txs: WithId<Transaction>[] = localStorageItem
+    ? JSON.parse(localStorageItem)
+    : [];
 
-export const parseJsonTransaction = (
-  transactions: string
-): WithId<Transaction>[] => {
-  let txs: WithId<Transaction>[] = JSON.parse(transactions);
-  //console.log("txs", txs);
+  const newTxs = txs.map((tx) => (tx.id === id ? updatedTx : tx));
 
-  return txs.map((tx) => {
-    const signatureKeys = Object.keys(tx.signatures);
-    console.log("signatureKeys", signatureKeys);
-    return {
-      ...tx,
-      signatures: new Map(),
-    };
-  });
-};
+  localStorage.setItem(
+    `pendingTx:${safeAddress}`,
+    JSON.stringify(newTxs, replacer)
+  );
 
-//0x3cbf4e1ce15f606ab9441358f1fa42bd96f27a3a
+  window.dispatchEvent(new Event("storage"));
+}
+
+export function parseTransactions(transactions: JSON) {
+  return JSON.parse(transactions, reviver);
+}

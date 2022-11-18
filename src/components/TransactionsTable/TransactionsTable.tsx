@@ -1,11 +1,8 @@
 import {
-  Box,
   Button,
   Flex,
-  HStack,
   Spinner,
   Table,
-  TableCaption,
   TableContainer,
   Tbody,
   Td,
@@ -14,9 +11,11 @@ import {
   Tr,
 } from "@chakra-ui/react";
 import { useConnectedMetaMask } from "metamask-react";
+import { useParams } from "react-router";
 import { useInvokeManager } from "../../hooks";
 import { Transaction, WithId } from "../../types";
-import { removeId } from "../../utils/transaction";
+import { updateTransaction } from "../../utils/localstorage";
+import { attachId, removeId } from "../../utils/transaction";
 
 export default function TransactionsTable({
   transactions,
@@ -38,11 +37,10 @@ export default function TransactionsTable({
         </Thead>
         <Tbody>
           {transactions.map((tx) => (
-            <TransactionTableItem tx={removeId(tx)} threshold={threshold} />
+            <TransactionTableItem key={tx.id} tx={tx} threshold={threshold} />
           ))}
         </Tbody>
       </Table>
-      ;
     </TableContainer>
   );
 }
@@ -51,28 +49,33 @@ const TransactionTableItem = ({
   tx,
   threshold,
 }: {
-  tx: Transaction;
+  tx: WithId<Transaction>;
   threshold?: number;
 }) => {
   const { account } = useConnectedMetaMask();
+  const { safe } = useParams();
 
-  const signed = tx.signatures?.has(account);
+  const signed = Array.from(tx.signatures.keys())
+    .map((k) => k.toLowerCase())
+    .includes(account);
 
-  const [addSignature, { data: signedTx, loading: signing }] =
+  const [addSignature, { loading: signing }] =
     useInvokeManager<Transaction>("addSignature");
 
-  const [executeTx, { data: executedTx, loading: executing }] =
-    useInvokeManager<Transaction>("addSignature");
+  const [executeTx, { loading: executing }] =
+    useInvokeManager<Transaction>("executeTransaction");
 
   const handleSignTransaction = async () => {
-    addSignature({ tx: tx });
+    addSignature({ tx: removeId(tx) }).then((res) => {
+      if (res.ok) {
+        updateTransaction(safe!, tx.id, attachId(tx.id, res.value));
+      }
+    });
   };
 
   const handleExecuteTransaction = async () => {
-    executeTx({ tx: tx });
+    executeTx({ tx: removeId(tx) });
   };
-
-  console.log("signedTx", signedTx);
 
   return (
     <Tr>

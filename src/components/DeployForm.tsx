@@ -13,21 +13,17 @@ import {
   NumberInput,
   Stack,
   Button,
-  Heading,
   Spinner,
   Image,
+  Box,
 } from "@chakra-ui/react";
 import { AddIcon } from "@chakra-ui/icons";
 
 import { Formik, Form, FieldArray, Field } from "formik";
 import { useConnectedMetaMask } from "metamask-react";
 import closeImg from "../images/close.svg";
-import {
-  NotificationContainer,
-  NotificationManager,
-  //@ts-ignore
-} from "react-notifications";
-import { PanelHead } from "./Panel";
+//@ts-ignore
+import { NotificationManager } from "react-notifications";
 import { useNavigate } from "react-router";
 import { addSafe } from "../utils/localstorage";
 
@@ -78,10 +74,9 @@ export default function DeployForm() {
   const initialValues = { owners: [account], threshold: 1, newOwner: "" };
 
   return (
-    <PanelHead
+    <Box
       sx={{
         borderRadius: "10px",
-        p: "60px",
         ".chakra-input__group, .chakra-numberinput": {
           background: "rgba(0, 20, 40, 0.04)",
           backdropFilter: "blur(20px)",
@@ -89,7 +84,6 @@ export default function DeployForm() {
         },
       }}
     >
-      <Heading sx={{ mb: "50px" }}>Safe Deployer</Heading>
       <Formik initialValues={initialValues} onSubmit={handleOnSubmit}>
         {({ values, errors }) => (
           <Form>
@@ -148,7 +142,12 @@ export default function DeployForm() {
                       ))}
                     <FormControl>
                       <FormLabel>
-                        <Button type="button" mr={4} onClick={() => push("")}>
+                        <Button
+                          type="button"
+                          mr={4}
+                          onClick={() => push("")}
+                          disabled={loading}
+                        >
                           <AddIcon />
                         </Button>
                         Add owner
@@ -165,7 +164,6 @@ export default function DeployForm() {
           </Form>
         )}
       </Formik>
-      <NotificationContainer />
-    </PanelHead>
+    </Box>
   );
 }
