@@ -56,7 +56,14 @@ export const TransactionTableItem = ({
         {tx.data.data}
       </Td>
       <Td isNumeric>{tx.data.value}</Td>
-      <Td isNumeric>
+      <Td
+        isNumeric
+        sx={{
+          overflow: "hidden",
+          whiteSpace: "nowrap",
+          textOverflow: "ellipsis",
+        }}
+      >
         <Link
           target={"_blank"}
           href={`${getExplorerTxLink()}/${tx.transactionHash}`}

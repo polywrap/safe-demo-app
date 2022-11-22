@@ -1,11 +1,12 @@
 import { useEffect } from "react";
 import { useMatches } from "react-router";
-import { Flex, Heading, Stack, Text } from "@chakra-ui/react";
+import { Flex, Heading, Stack, Text, Tooltip } from "@chakra-ui/react";
 import { useConnectedMetaMask } from "metamask-react";
 import { useEthereumPlugin, useInvokeManager } from "../hooks";
 import { withLoading } from "../utils/loader";
 import { AddressList } from "./AddressPanel";
 import Panel, { PanelHead, PanelBody } from "./Panel";
+import { formatValue } from "../utils/number";
 
 export default function Safe() {
   const [match] = useMatches();
@@ -48,7 +49,14 @@ export default function Safe() {
         <Stack>
           <Heading size={"md"}>
             Balance:{" "}
-            {withLoading(balanceLoading, balanceData && balanceData.toString())}
+            {withLoading(
+              balanceLoading,
+              balanceData && (
+                <Tooltip label={balanceData.toString()}>
+                  {formatValue(balanceData)}
+                </Tooltip>
+              )
+            )}
           </Heading>
         </Stack>
         <Stack>
