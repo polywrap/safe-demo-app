@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useMatches } from "react-router";
 import { Flex, Heading, Stack, Text } from "@chakra-ui/react";
 import { useConnectedMetaMask } from "metamask-react";
-import { useInvokeManager } from "../hooks";
+import { useEthereumPlugin, useInvokeManager } from "../hooks";
 import { withLoading } from "../utils/loader";
 import { AddressList } from "./AddressPanel";
 import Panel, { PanelHead, PanelBody } from "./Panel";
@@ -22,10 +22,17 @@ export default function Safe() {
   const [isOwner, { data: isOwnerData, loading: isOwnerLoading }] =
     useInvokeManager<number>("isOwner", safeAddress); //  ownerAddress: String!
 
+  const {
+    execute: getBalance,
+    data: balanceData,
+    loading: balanceLoading,
+  } = useEthereumPlugin<string>("getBalance"); //  ownerAddress: String!
+
   useEffect(() => {
     getOwners({ address: safeAddress });
     getThreshold({});
     isOwner({ ownerAddress: account });
+    getBalance({ address: safeAddress });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [safeAddress]);
 
@@ -38,6 +45,12 @@ export default function Safe() {
           </Text>
           <Text fontSize={"18px"}>{safeAddress}</Text>
         </Flex>
+        <Stack>
+          <Heading size={"md"}>
+            Balance:{" "}
+            {withLoading(balanceLoading, balanceData && balanceData.toString())}
+          </Heading>
+        </Stack>
         <Stack>
           <Heading size={"md"}>
             Account is owner:{" "}

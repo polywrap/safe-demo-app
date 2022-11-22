@@ -9,3 +9,4 @@ export interface Transaction {
 }
 
 export type WithId<T> = T & { id: string };
+export type WithTxHash<T> = T & { transactionHash: string };

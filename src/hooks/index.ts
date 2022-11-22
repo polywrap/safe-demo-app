@@ -44,3 +44,10 @@ export const useInvokeManager = <TData extends any>(
 
   return [execute, { data: data, loading, error }];
 };
+
+export const useEthereumPlugin = <TData extends any>(method: string) => {
+  return usePolywrapInvoke<TData>({
+    uri: "wrap://ens/ethereum.polywrap.eth",
+    method: method,
+  });
+};

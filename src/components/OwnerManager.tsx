@@ -18,7 +18,11 @@ import { useInvokeManager } from "../hooks";
 import { SAFE_TRANSACTIONS } from "../modules/router/routes";
 import { Transaction } from "../types";
 import { withLoading } from "../utils/loader";
-import { addPendingTransaction } from "../utils/localstorage";
+import {
+  addExecutedTransaction,
+  addPendingTransaction,
+} from "../utils/localstorage";
+import { TxReceipt } from "../vendor/ethereum-plugin-js/wrap";
 import { AddressList } from "./AddressPanel";
 import Panel, { PanelHead, PanelBody } from "./Panel";
 
@@ -43,7 +47,7 @@ export default function OwnerManager() {
     useInvokeManager<Transaction>("createTransaction");
 
   const [executeTx, { loading: executing }] =
-    useInvokeManager<Transaction>("executeTransaction");
+    useInvokeManager<TxReceipt>("executeTransaction");
 
   //SET
   const [encodeAddOwnerWithThresholdData, { loading: encodingAddOwner }] =
@@ -78,6 +82,11 @@ export default function OwnerManager() {
     } else {
       const changeResult = await executeTx({ tx: tx.value });
       if (!changeResult.ok) return;
+      addExecutedTransaction(
+        safeAddress!,
+        { id: Date.now().toString(), ...tx.value },
+        changeResult.value.transactionHash
+      );
       rerender();
     }
   };
@@ -102,6 +111,11 @@ export default function OwnerManager() {
     } else {
       const addResult = await executeTx({ tx: tx.value });
       if (!addResult.ok) return;
+      addExecutedTransaction(
+        safeAddress!,
+        { id: Date.now().toString(), ...tx.value },
+        addResult.value.transactionHash
+      );
       rerender();
     }
   };
@@ -126,6 +140,11 @@ export default function OwnerManager() {
     } else {
       const removeResult = await executeTx({ tx: tx.value });
       if (!removeResult.ok) return;
+      addExecutedTransaction(
+        safeAddress!,
+        { id: Date.now().toString(), ...tx.value },
+        removeResult.value.transactionHash
+      );
       rerender();
     }
   };

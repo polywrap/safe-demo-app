@@ -28,3 +28,8 @@ export function reviver(key: string, value: any) {
   }
   return value;
 }
+
+
+export const getExplorerTxLink = (network = "goerli") => {
+  return `https://${network}.etherscan.io/tx`;
+};

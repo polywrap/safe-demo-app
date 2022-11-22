@@ -6,6 +6,7 @@ import { useInvokeManager } from "../hooks";
 import { SAFE_CREATE_TRANSACTION } from "../modules/router/routes";
 import useStorage from "../hooks/useStorage";
 import { reviver } from "../utils/string";
+import TransactionsHistoryTable from "../components/TransactionsTable/TransactionsHistoryTable";
 
 export default function Transactions() {
   const params = useParams();
@@ -16,25 +17,26 @@ export default function Transactions() {
     useInvokeManager<number>("getThreshold");
 
   const pendingTransactions = useStorage(`pendingTx:${safeAddress}`, reviver);
+  const executedTransactions = useStorage(`executedTx:${safeAddress}`, reviver);
 
   useEffect(() => {
     getThreshold({});
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   return (
-    <Box>
+    <Box display={"flex"} flexDir="column" gap="40px">
       {pendingTransactions.length ? (
-        <>
+        <Box>
           <Heading mb="20px">Pending Transactions</Heading>
           <TransactionsTable
             transactions={pendingTransactions}
             threshold={threshold}
           />
-        </>
+        </Box>
       ) : (
-        <>
+        <Box>
           <Heading mb="20px">No pending transactions</Heading>
-          <Text mb={"20px"}>You don't have pending transactions</Text>
+          <Text mb={"20px"}>Safe doesn't have pending transactions</Text>
           <Button
             onClick={() =>
               navigate(`/${safeAddress}/${SAFE_CREATE_TRANSACTION}`)
@@ -42,8 +44,14 @@ export default function Transactions() {
           >
             New Transaction
           </Button>
-        </>
+        </Box>
       )}
+      {executedTransactions?.length ? (
+        <Box>
+          <Heading mb="20px">Executed Transactions</Heading>
+          <TransactionsHistoryTable transactions={executedTransactions} />
+        </Box>
+      ) : null}
     </Box>
   );
 }
