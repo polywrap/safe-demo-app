@@ -66,7 +66,7 @@ export default function OwnerManager() {
     useInvokeManager<string>("encodeChangeThresholdData"); // {  threshold: UInt32!}
 
   const handleChangeThreshold = async () => {
-    const encoded = await encodeChangeThresholdData({ threshold: 1 });
+    const encoded = await encodeChangeThresholdData({ threshold: newThresold });
     if (!encoded.ok) return;
     const tx = await createTransaction({
       tx: {
@@ -91,6 +91,7 @@ export default function OwnerManager() {
     }
   };
   const [newOwner, setNewOwner] = useState("");
+  const [newThresold, setNewTreshold] = useState<number>();
 
   const handleAddOwner = async () => {
     const encoded = await encodeAddOwnerWithThresholdData({
@@ -189,7 +190,13 @@ export default function OwnerManager() {
 
       <Stack>
         <Flex>
-          <NumberInput w={70} min={0} max={99} defaultValue={0}>
+          <NumberInput
+            w={70}
+            min={0}
+            max={99}
+            defaultValue={threshold || 1}
+            onChange={(e) => setNewTreshold(Number(e))}
+          >
             <NumberInputField />
             <NumberInputStepper>
               <NumberIncrementStepper />
@@ -197,9 +204,8 @@ export default function OwnerManager() {
             </NumberInputStepper>
           </NumberInput>
           <Button
-            //isLoading={changeThresholdLoading}
+            isLoading={encodingChangeThreshold || executing}
             onClick={handleChangeThreshold}
-            disabled={encodingChangeThreshold || executing}
           >
             Change Threshold
           </Button>
@@ -211,7 +217,7 @@ export default function OwnerManager() {
           />
           <Button
             onClick={handleAddOwner}
-            disabled={encodingAddOwner || executing}
+            isLoading={encodingAddOwner || executing}
           >
             Add Owner
           </Button>
