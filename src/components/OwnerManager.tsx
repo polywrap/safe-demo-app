@@ -180,7 +180,7 @@ export default function OwnerManager() {
           {withLoading(
             ownersLoading,
             <AddressList
-              addressess={owners || new Array(6).fill(account)}
+              addressess={owners || []}
               onRemove={handleRemoveOwner}
             />
           )}

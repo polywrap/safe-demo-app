@@ -12,12 +12,14 @@ import {
   SAFE_SETTING,
   SAFE_TRANSACTIONS,
 } from "./routes";
+import HomeLogo from "../../components/HomeLogo";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Root />,
     children: [
+      { path: "/", element: <HomeLogo /> },
       {
         path: `/${DEPLOY_SAFE}`,
         element: <NewSafe />,

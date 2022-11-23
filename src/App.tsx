@@ -7,6 +7,7 @@ import "react-notifications/lib/notifications.css";
 import Header from "./components/Header";
 import { RouterProvider } from "react-router";
 import router from "./modules/router";
+import HomeLogo from "./components/HomeLogo";
 
 function App() {
   const { account, ethereum, status } = useMetaMask();
@@ -28,6 +29,8 @@ function App() {
           </PolywrapProvider>
         );
       }
+      default:
+        return <HomeLogo />;
     }
   };
   return (

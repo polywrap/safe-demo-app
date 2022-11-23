@@ -73,17 +73,16 @@ export default function Safe() {
             Required confirmations:{" "}
             {withLoading(
               thresholdLoading || ownersLoading,
-              `${threshold} out of ${owners?.length} owners`
+              threshold && owners?.length
+                ? `${threshold} out of ${owners?.length} owners`
+                : ""
             )}
           </Heading>
         </Stack>
       </PanelHead>
       <PanelBody>
         Owners:
-        {withLoading(
-          ownersLoading,
-          <AddressList addressess={owners || new Array(6).fill(account)} />
-        )}
+        {withLoading(ownersLoading, <AddressList addressess={owners || []} />)}
       </PanelBody>
     </Panel>
   );
