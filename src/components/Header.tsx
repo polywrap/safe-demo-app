@@ -9,11 +9,13 @@ import {
 import logoSrc from "../images/logo.svg";
 
 export default function Header() {
-  const { connect, account, chainId, status } = useMetaMask();
+  const { connect, account, chainId, status, switchChain } = useMetaMask();
 
-  const handleConnect = () => {
+  const handleConnect = async () => {
     if (status !== "connected") {
-      connect();
+      // switch to Goerli
+      await switchChain("0x5");
+      await connect();
     } else {
       navigator.clipboard.writeText(account!);
       NotificationManager.success(account, "Address Copied");
