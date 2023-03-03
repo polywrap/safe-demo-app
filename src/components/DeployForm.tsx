@@ -1,5 +1,5 @@
-import { usePolywrapInvoke } from "@polywrap/react";
-import { SAFE_FACTORY_URI } from "../lib/polywrap/uris";
+import { usePolywrapInvoke } from "@cbrazon/react";
+import { SAFE_FACTORY_URI } from "../client-config";
 import {
   Input,
   InputRightElement,

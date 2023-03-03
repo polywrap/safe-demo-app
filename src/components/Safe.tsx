@@ -2,7 +2,7 @@ import { useEffect } from "react";
 import { useMatches } from "react-router";
 import { Flex, Heading, Stack, Text, Tooltip } from "@chakra-ui/react";
 import { useConnectedMetaMask } from "metamask-react";
-import { useEthereumPlugin, useInvokeManager } from "../hooks";
+import { useEthereumWrapper, useInvokeManager } from "../hooks";
 import { withLoading } from "../utils/loader";
 import { AddressList } from "./AddressPanel";
 import Panel, { PanelHead, PanelBody } from "./Panel";
@@ -27,7 +27,7 @@ export default function Safe() {
     execute: getBalance,
     data: balanceData,
     loading: balanceLoading,
-  } = useEthereumPlugin<string>("getBalance"); //  ownerAddress: String!
+  } = useEthereumWrapper<string>("getBalance"); //  ownerAddress: String!
 
   useEffect(() => {
     getOwners({ address: safeAddress });

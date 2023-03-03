@@ -22,7 +22,7 @@ import {
   addExecutedTransaction,
   addPendingTransaction,
 } from "../utils/localstorage";
-import { TxReceipt } from "../vendor/ethereum-plugin-js/wrap";
+import { Ethereum_TxReceipt } from "../wrap";
 import { AddressList } from "./AddressPanel";
 import Panel, { PanelHead, PanelBody } from "./Panel";
 
@@ -47,7 +47,7 @@ export default function OwnerManager() {
     useInvokeManager<Transaction>("createTransaction");
 
   const [executeTx, { loading: executing }] =
-    useInvokeManager<TxReceipt>("executeTransaction");
+    useInvokeManager<Ethereum_TxReceipt>("executeTransaction");
 
   //SET
   const [encodeAddOwnerWithThresholdData, { loading: encodingAddOwner }] =

@@ -1,12 +1,13 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { InvokeResult } from "@polywrap/client-js";
+import { Uri } from "@polywrap/core-js";
 import {
   usePolywrapInvoke,
   UsePolywrapInvoke,
-} from "@polywrap/react/build/invoke";
+} from "@cbrazon/react/build/invoke";
 import { useEffect } from "react";
 import { useMatches } from "react-router";
-import { SAFE_MANAGER_URI } from "../lib/polywrap/uris";
+import { SAFE_MANAGER_URI } from "../client-config";
 import {
   NotificationManager,
   //@ts-ignore
@@ -45,9 +46,9 @@ export const useInvokeManager = <TData extends any>(
   return [execute, { data: data, loading, error }];
 };
 
-export const useEthereumPlugin = <TData extends any>(method: string) => {
+export const useEthereumWrapper = <TData extends any>(method: string) => {
   return usePolywrapInvoke<TData>({
-    uri: "wrap://ens/ethereum.polywrap.eth",
+    uri: Uri.from("wrap://ens/wraps.eth:ethereum@1.1.0"),
     method: method,
   });
 };

@@ -22,11 +22,10 @@ import {
   Tooltip,
   Tr,
 } from "@chakra-ui/react";
-import { TxReceipt } from "@polywrap/ethereum-plugin-js/build/wrap";
 import { useConnectedMetaMask } from "metamask-react";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router";
-import { useEthereumPlugin, useInvokeManager } from "../../hooks";
+import { useEthereumWrapper, useInvokeManager } from "../../hooks";
 import { Transaction, WithId } from "../../types";
 import {
   addExecutedTransaction,
@@ -38,6 +37,7 @@ import { attachId, removeId } from "../../utils/transaction";
 //@ts-ignore
 import { NotificationManager } from "react-notifications";
 import { SmallCloseIcon } from "@chakra-ui/icons";
+import { Ethereum_TxReceipt } from "../../wrap";
 
 export default function TransactionsTable({
   transactions,
@@ -102,12 +102,12 @@ const TransactionTableItem = ({
     useInvokeManager<string>("getTransactionHash");
 
   const [executeTx, { loading: executing }] =
-    useInvokeManager<TxReceipt>("executeTransaction");
+    useInvokeManager<Ethereum_TxReceipt>("executeTransaction");
 
   const [getOwnersWhoApprovedTx, { loading: gettingApprovers }] =
     useInvokeManager<string[]>("getOwnersWhoApprovedTx");
 
-  const { execute: getSignerAddress } = useEthereumPlugin("getSignerAddress");
+  const { execute: getSignerAddress } = useEthereumWrapper("getSignerAddress");
 
   const handleSignTransaction = async () => {
     addSignature({ tx: removeId(tx) }).then((res) => {
