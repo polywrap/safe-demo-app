@@ -34,7 +34,7 @@ export default function DeployForm() {
     Record<string, unknown> & { safeAddress: string }
   >({
     uri: SAFE_FACTORY_URI,
-    method: "deploySafe",
+    method: "deploySafe"
   });
   const navigate = useNavigate();
 
