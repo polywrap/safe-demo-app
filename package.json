@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prestart": "rimraf ./node_modules/.cache",
     "start": "craco start",
     "build": "craco build",
     "codegen": "polywrap codegen",
@@ -18,7 +19,7 @@
     "@craco/craco": "^6.4.5",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
-    "@polywrap/ethereum-provider-js": "0.2.3",
+    "@polywrap/ethereum-provider-js": "0.2.4",
     "@polywrap/datetime-plugin-js": "1.0.0-pre.1",
     "@cbrazon/react": "0.10.0-pre.14",
     "buffer": "^6.0.3",
@@ -59,6 +60,7 @@
     "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-react-hooks": "^4.3.0",
     "prettier": "^2.4.1",
+    "rimraf": "^4.3.1",
     "typescript": "4.5.2"
   },
   "eslintConfig": {

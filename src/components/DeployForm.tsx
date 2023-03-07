@@ -24,7 +24,7 @@ import { useConnectedMetaMask } from "metamask-react";
 import closeImg from "../images/close.svg";
 //@ts-ignore
 import { NotificationManager } from "react-notifications";
-import { useNavigate } from "react-router";
+import { redirect } from "react-router";
 import { addSafe } from "../utils/localstorage";
 
 export default function DeployForm() {
@@ -36,7 +36,6 @@ export default function DeployForm() {
     uri: SAFE_FACTORY_URI,
     method: "deploySafe"
   });
-  const navigate = useNavigate();
 
   const handleOnSubmit = (v: typeof initialValues) => {
     execute({
@@ -66,7 +65,7 @@ export default function DeployForm() {
 
         console.log("success", res.value);
         addSafe(safeAddress);
-        navigate("/0x3cbf4e1ce15f606ab9441358f1fa42bd96f27a3a/home");
+        redirect(safeAddress + "/home");
       }
     });
   };

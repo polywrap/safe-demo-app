@@ -41,7 +41,7 @@ export const getBuilderConfig = (
     )
     .addRedirect(
       "ens/wraps.eth:ethereum@1.1.0",
-      "wrap://ipfs/QmS9XNACyMsY4uvEuWB1wnf2UxQSGPWen7ojvtEe3yr9Yu"
+      "wrap://ipfs/QmbnAG8iCdVMPQK8tQ5qqFwLKjaLF8BUuuLYiozj7mLF8Y"
     )
     .addInterfaceImplementation(
       "wrap://ens/wraps.eth:ethereum-provider@1.1.0",
