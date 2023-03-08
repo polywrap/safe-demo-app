@@ -1,5 +1,5 @@
 import "./App.css";
-import { PolywrapProvider } from "@cbrazon/react";
+import { PolywrapProvider } from "@polywrap/react";
 import { getBuilderConfig } from "./client-config";
 import { useMetaMask } from "metamask-react";
 import { Spinner, Box } from "@chakra-ui/react";

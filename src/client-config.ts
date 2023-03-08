@@ -30,7 +30,7 @@ export const getBuilderConfig = (
           defaultNetwork: chainId,
         }),
       }) as IWrapPackage,
-      "wrap://ens/datetime.polywrap.eth": dateTimePlugin({}),
+      "wrap://ens/datetime.polywrap.eth": dateTimePlugin({}) as IWrapPackage,
     })
     .addRedirect("wrap://ens/safe.contracts.polywrap.eth", SAFE_CONTRACTS_URI.uri)
     .addRedirect("wrap://ens/factory.safe.wraps.eth", SAFE_FACTORY_URI.uri)

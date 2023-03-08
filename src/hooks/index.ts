@@ -4,7 +4,7 @@ import { Uri } from "@polywrap/core-js";
 import {
   usePolywrapInvoke,
   UsePolywrapInvoke,
-} from "@cbrazon/react/build/invoke";
+} from "@polywrap/react/build/invoke";
 import { useEffect } from "react";
 import { useMatches } from "react-router";
 import { SAFE_MANAGER_URI } from "../client-config";

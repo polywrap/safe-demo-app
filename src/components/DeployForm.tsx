@@ -1,4 +1,4 @@
-import { usePolywrapInvoke } from "@cbrazon/react";
+import { usePolywrapInvoke } from "@polywrap/react";
 import { SAFE_FACTORY_URI } from "../client-config";
 import {
   Input,
