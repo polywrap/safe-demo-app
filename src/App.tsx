@@ -1,6 +1,6 @@
 import "./App.css";
 import { PolywrapProvider } from "@polywrap/react";
-import { getClientConfig } from "./lib/polywrap/config";
+import { getBuilderConfig } from "./client-config";
 import { useMetaMask } from "metamask-react";
 import { Spinner, Box } from "@chakra-ui/react";
 import "react-notifications/lib/notifications.css";
@@ -19,7 +19,7 @@ function App() {
       case "connected": {
         return (
           <PolywrapProvider
-            {...getClientConfig(
+            {...getBuilderConfig(
               ethereum.networkVersion || "",
               ethereum,
               account || ""

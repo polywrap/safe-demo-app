@@ -3,8 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "prestart": "rimraf ./node_modules/.cache",
     "start": "craco start",
     "build": "craco build",
+    "codegen": "polywrap codegen",
     "prettier": "npx prettier --write src/**/*.ts{,x}",
     "lint": "tsc --noEmit && eslint src/**/*.ts{,x}",
     "lint:fix": "tsc --noEmit && eslint src/**/*.ts{,x} --fix",
@@ -17,8 +19,9 @@
     "@craco/craco": "^6.4.5",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
-    "@polywrap/ethereum-plugin-js": "^0.9.4",
-    "@polywrap/react": "^0.9.4",
+    "@polywrap/ethereum-provider-js": "0.2.4",
+    "@polywrap/datetime-plugin-js": "1.0.0-pre.1",
+    "@polywrap/react": "0.10.0-pre.7",
     "buffer": "^6.0.3",
     "crypto-browserify": "^3.12.0",
     "formik": "^2.2.9",
@@ -27,9 +30,8 @@
     "metamask-react": "^2.4.0",
     "node-fetch": "^3.2.10",
     "os-browserify": "^0.3.0",
-    "patch-package": "^6.5.0",
     "path-browserify": "^1.0.1",
-    "polywrap": "^0.9.4",
+    "polywrap": "0.10.0-pre.11",
     "process": "^0.11.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
@@ -58,13 +60,10 @@
     "eslint-plugin-react": "^7.27.1",
     "eslint-plugin-react-hooks": "^4.3.0",
     "prettier": "^2.4.1",
+    "rimraf": "^4.3.1",
     "typescript": "4.5.2"
   },
   "eslintConfig": {
-    "ignorePatterns": [
-      "**/vendor/*.js",
-      "**/vendor/**/*"
-    ],
     "extends": [
       "react-app"
     ]
